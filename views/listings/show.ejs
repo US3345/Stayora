@@ -1,0 +1,246 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <!-- ===== TITLE ===== -->
+            <h1 class="fw-bold mb-3"><%= listing.title %></h1>
+
+            <!-- ===== IMAGE ===== -->
+            <div class="card border-0 shadow-sm mb-4">
+                <img
+                    src="<%= (listing.image && listing.image.url && listing.image.url.trim() !== '') ? listing.image.url : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBrmmhVb59P-PoQSerXoRGIPnwBwkiZ8infg&s' %>"
+                    class="card-img-top rounded-top"
+                    alt="<%= listing.title %>"
+                    style="width:100%; height:400px; object-fit:cover;"
+                    onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBrmmhVb59P-PoQSerXoRGIPnwBwkiZ8infg&s'"
+                >
+            </div>
+
+            <!-- ===== PROPERTY DETAILS ===== -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">Property Details</h4>
+                    <p class="text-muted fs-5"><%= listing.description %></p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-secondary">Location</h6>
+                            <p class="fs-5">
+                                <i class="fa-solid fa-location-dot text-danger"></i>
+                                <%= listing.location %>, <%= listing.country %>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-secondary">Price</h6>
+                            <p class="fs-4 fw-bold text-success">
+                                ₹ <%= listing.price.toLocaleString('en-IN') %>
+                                <span class="text-muted fs-6">/ night</span>
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <h6 class="text-secondary">Listing ID</h6>
+                        <small class="text-muted"><%= listing._id %></small>
+                    </div>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning px-4">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Listing
+                        </a>
+                        <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+                            <button type="submit" class="btn btn-danger px-4">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== LEAVE A REVIEW ===== -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">
+                        <i class="fa-solid fa-star text-warning"></i> Leave a Review
+                    </h4>
+                    <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
+                        <div class="mb-4">
+                            <label for="rating" class="form-label fw-semibold text-secondary">Rating</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="5"
+                                    id="rating"
+                                    name="review[rating]"
+                                    class="form-range"
+                                    value="3"
+                                >
+                                <span id="ratingValue" class="badge bg-warning text-dark fs-6">3 / 5</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="comment" class="form-label fw-semibold text-secondary">Comments</label>
+                            <textarea
+                                name="review[comment]"
+                                id="comment"
+                                class="form-control border"
+                                rows="4"
+                                placeholder="Share your experience with this property..."
+                                required
+                            ></textarea>
+                            <div class="invalid-feedback">Review field cannot be empty.</div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                Please share your honest feedback to help other guests make informed decisions.
+                            </small>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Review
+                            </button>
+                            <button type="reset" class="btn btn-secondary px-4">
+                                <i class="fa-solid fa-arrows-rotate"></i> Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ===== ALL REVIEWS ===== -->
+            <div class="mb-5">
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <h4 class="fw-bold mb-0">Guest Reviews</h4>
+                    <span class="badge rounded-pill text-bg-dark px-3 py-2 fs-6">
+                        <%= listing.reviews.length %>
+                    </span>
+                </div>
+
+                <!-- Empty state -->
+                <% if (listing.reviews.length === 0) { %>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center py-5">
+                            <div class="mb-3" style="font-size:3rem;">🏡</div>
+                            <p class="text-muted fs-5 mb-0">No reviews yet. Be the first to share your experience!</p>
+                        </div>
+                    </div>
+
+                <!-- Reviews grid -->
+                <% } else { %>
+                    <div class="row g-4">
+                        <% for (let review of listing.reviews) { %>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 shadow-sm rounded-4" style="background:#fafafa;">
+                                    <div class="card-body p-4">
+
+                                        <!-- Header: icon + date -->
+                                        <div class="d-flex align-items-center mb-3 gap-3">
+
+                                            <!-- Person icon inside circle -->
+                                            <div style="
+                                                width: 48px;
+                                                height: 48px;
+                                                border-radius: 50%;
+                                                background: linear-gradient(135deg, #667eea, #764ba2);
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                flex-shrink: 0;
+                                            ">
+                                                <i class="fa-solid fa-user" style="color:#fff; font-size:1.1rem;"></i>
+                                            </div>
+
+                                            <div>
+                                                <p class="mb-0 fw-semibold" style="color:#2d2d2d;">Anonymous Guest</p>
+                                                <small class="text-muted">
+                                                    <i class="fa-regular fa-calendar me-1"></i>
+                                                    <%= new Date(review.createdAt).toLocaleDateString('en-IN', {
+                                                        day: 'numeric',
+                                                        month: 'long',
+                                                        year: 'numeric'
+                                                    }) %>
+                                                </small>
+                                            </div>
+
+                                            <!-- Rating pill pushed to right -->
+                                            <div class="ms-auto">
+                                                <span class="badge rounded-pill px-3 py-2 fw-semibold"
+                                                    style="background:#fff7e6; color:#c87f0a; border:1px solid #f5c842; font-size:0.85rem;">
+                                                    <i class="fa-solid fa-star me-1" style="color:#f5c842;"></i>
+                                                    <%= review.rating %> / 5
+                                                </span>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Star Row -->
+                                        <div class="mb-3">
+                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                <% if (i <= review.rating) { %>
+                                                    <i class="fa-solid fa-star" style="color:#f5c842;"></i>
+                                                <% } else { %>
+                                                    <i class="fa-regular fa-star" style="color:#ddd;"></i>
+                                                <% } %>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- Divider -->
+                                        <hr class="my-3" style="border-color:#eee;">
+
+                                        <!-- Comment -->
+                                        <p class="mb-4" style="color:#555; line-height:1.75; font-size:0.97rem;">
+                                            "<%= review.comment %>"
+                                        </p>
+
+                                        <!-- Delete button -->
+                                        <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                            <button type="submit"
+                                                class="btn btn-sm px-3"
+                                                style="border:1px solid #f5c6cb; color:#842029; background:#fff5f5; border-radius:20px;"
+                                                onmouseover="this.style.background='#f8d7da'"
+                                                onmouseout="this.style.background='#fff5f5'"
+                                            >
+                                                <i class="fa-solid fa-trash-can me-1"></i> Delete
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                    
+                                </div>
+                               
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Rating slider live update
+    const ratingInput = document.getElementById('rating');
+    const ratingValue = document.getElementById('ratingValue');
+    ratingInput.addEventListener('input', function () {
+        ratingValue.textContent = this.value + ' / 5';
+    });
+
+    // Bootstrap form validation
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', e => {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>

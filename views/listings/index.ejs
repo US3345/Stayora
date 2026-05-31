@@ -1,0 +1,70 @@
+<% layout("/layouts/boilerplate") %>
+
+
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4">
+        Explore Stays
+    </h2>
+
+    <div class="row g-4">
+
+        <% for(let listing of alllistings){ %>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+
+                <a
+                    href="/listings/<%= listing._id %>"
+                    class="listing-link text-decoration-none"
+                >
+
+                    <div class="card listing-card h-100 shadow-sm">
+
+                        <img
+                            src="<%= (listing.image && listing.image.url && listing.image.url.trim() !== '') ? listing.image.url : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBrmmhVb59P-PoQSerXoRGIPnwBwkiZ8infg&s' %>"
+                            class="card-img-top listing-img"
+                            alt="<%= listing.title %>"
+                            loading="lazy"
+                            onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBrmmhVb59P-PoQSerXoRGIPnwBwkiZ8infg&s'"
+                        >
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                <%= listing.title %>
+                            </h5>
+
+                            <p class="card-text mb-2">
+
+                                <span class="fw-semibold">
+                                    ₹ <%= listing.price.toLocaleString('en-IN') %>
+                                </span>
+
+                                <span class="text-muted">
+                                    / night
+                                </span>
+
+                            </p>
+
+                            <p class="location-text mb-0">
+
+                                <i class="fa-solid fa-location-dot text-danger"></i>
+
+                                <%= listing.location %>,
+                                <%= listing.country %>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        <% } %>
+
+    </div>
+
+</div>
