@@ -24,9 +24,7 @@ const app = express();
 
 /* ---------------- MONGODB CONNECTION ---------------- */
 
-mongoose.connect(
-"mongodb://2305584_db_user:8BXFXRj0jCiSQKrv@ac-bbbxw9y-shard-00-00.t0k5ami.mongodb.net:27017,ac-bbbxw9y-shard-00-01.t0k5ami.mongodb.net:27017,ac-bbbxw9y-shard-00-02.t0k5ami.mongodb.net:27017/?ssl=true&replicaSet=atlas-s3mezj-shard-0&authSource=admin&appName=Cluster0"
-)
+mongoose.connect(process.env.MONGO_URL || "your-mongodb-atlas-connection-string")
 .then(() => {
     console.log("✅ MongoDB Connected");
 })
